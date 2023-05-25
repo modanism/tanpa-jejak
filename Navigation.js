@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import Login from './screens/login';
 import Register from './screens/register';
+import Home from './screens/home';
 
 const Stack = createNativeStackNavigator();
 
@@ -11,8 +12,10 @@ const Navigation = () => {
   return (
     <NavigationContainer>
         <Stack.Navigator>
-            <Stack.Screen name='Login' component={Login} options={{headerTitleStyle: {fontFamily: 'SF-Pro'}, headerShown: false}} screenOptions={{headerShown: true}}/>
+            <Stack.Screen name='Login' component={Login} options={{headerShown: false}} />
             <Stack.Screen name='Register' component={Register} options={{headerShown: false}}/>
+            <Stack.Screen name='Home' component={Home} options={{headerShown: false}}/>
+
         </Stack.Navigator>
     </NavigationContainer>
   )
