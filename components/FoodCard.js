@@ -1,6 +1,5 @@
-import { ScrollView, StyleSheet, Text, View, Image } from "react-native";
+import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
-import { Pressable } from "react-native";
 
 const FoodCard = ({item, index, onPress}) => {
   const formatter = new Intl.NumberFormat(undefined, {
@@ -9,18 +8,19 @@ const FoodCard = ({item, index, onPress}) => {
   });
 
   return (
-    <Pressable
-      style={{ margin: 10, backgroundColor: "white", borderRadius: 15 }}
+    <TouchableOpacity
+      style={{ margin: 10, backgroundColor: "white", borderRadius: 15, width:150 }}
       key={index}
       onPress={onPress}
     >
       <Image
         source={{ uri: item.image }}
         style={{
-          width: 150,
+          width: "100%",
           height: 90,
           borderTopRightRadius: 15,
           borderTopLeftRadius: 15,
+          resizeMode:'stretch'
         }}
       />
       <Text
@@ -45,7 +45,7 @@ const FoodCard = ({item, index, onPress}) => {
       >
         {item.name}
       </Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

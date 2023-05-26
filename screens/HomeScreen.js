@@ -122,7 +122,7 @@ const HomeScreen = () => {
     if (product.length > 0) return;
     const fetchProducts = async () => {
       // services.map((service) => dispatch(getProducts(service)));
-      const colRef = collection(db, "types");
+      const colRef = collection(db, "products");
       const docsSnap = await getDocs(colRef);
       docsSnap.forEach((doc) => {
         items.push(doc.data());

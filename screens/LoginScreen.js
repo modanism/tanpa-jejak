@@ -15,6 +15,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
+import { useDispatch } from "react-redux";
+import { setAuth } from "../AuthReducer";
 
 const LoginScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,6 +24,9 @@ const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [focusedInput, setFocusedInput] = useState(null);
+
+  const dispatch = useDispatch();
+
 
   const inputBorderColor = (inputName) =>
     focusedInput === inputName ? "#A1E3D8" : "#EDEDED";
@@ -46,9 +51,11 @@ const LoginScreen = () => {
     console.log(password);
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        console.log("user cred", userCredential);
         const user = userCredential.user;
-        console.log("user detail", user);
+        console.log("user detail", user.uid);
+        // dispatch(setAuth(user))
+
+        
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -111,7 +118,7 @@ const LoginScreen = () => {
               onChangeText={(text) => setPassword(text)}
             />
 
-            <Pressable
+            <TouchableOpacity
               onPress={login}
               style={{
                 width: 300,
@@ -132,7 +139,7 @@ const LoginScreen = () => {
               >
                 Login
               </Text>
-            </Pressable>
+            </TouchableOpacity>
             <View style={{ flexDirection: "row", justifyContent: "center" }}>
               <Text style={{ textAlign: "center", fontSize: 16 }}>
                 Don't have an account?

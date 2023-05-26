@@ -29,16 +29,13 @@ export const productSlice = createSlice({
         itemPresent.quantity--;
       }
     },
-    // emptyQty: (state, action) => {
-    //   const itemPresent = state.cart.find(
-    //     (item) => item.id === action.payload.id
-    //   );
-    //   itemPresent.quantity = 0;
-    //   const removeItem = state.product.filter(
-    //     (item) => item.id !== action.payload.id
-    //   );
-    //   state.cart = removeItem;
-    // },
+    emptyQty: (state, action) => {
+      const itemPresent = state.product.find(
+        (item) => item.id === action.payload.id
+      );
+      itemPresent.quantity = 0;
+      state.cart = itemPresent;
+    },
   },
 });
 

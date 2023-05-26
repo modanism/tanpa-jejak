@@ -8,6 +8,7 @@ import {
   TextInput,
   Pressable,
   Alert,
+  ScrollView,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import React, { useState } from "react";
@@ -17,15 +18,46 @@ import { useNavigation } from "@react-navigation/native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
+import DropDownPicker from "react-native-dropdown-picker";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import colors from "../utils/colors";
+import PasswordInput from "../components/PasswordInput";
+import { useDispatch } from "react-redux";
+import { setAuth } from "../AuthReducer";
 
 const RegisterScreen = () => {
+  const [fullname, setFullname] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [phone, setPhone] = useState("");
+  const [gender, setGender] = useState("");
+  // const [address, setAddress] = useState("")
   const navigation = useNavigation();
 
+  // Dropdown
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState([
+    { label: "Male", value: "M" },
+    { label: "Female", value: "F" },
+  ]);
+
+  const dispatch = useDispatch();
+
   const register = () => {
-    if (email === "" || password === "" || phone === "") {
+    console.log(password);
+    console.log(confirmPassword);
+    console.log(gender);
+    if (
+      email === "" ||
+      password === "" ||
+      phone === "" ||
+      fullname === "" ||
+      username === "" ||
+      phone === "" ||
+      gender === ""
+    ) {
       Alert.alert(
         "Invalid Details",
         "Please fill all the details",
@@ -40,18 +72,42 @@ const RegisterScreen = () => {
         { cancelable: false }
       );
     } else {
-      createUserWithEmailAndPassword(auth, email, password).then(
-        (userCredential) => {
-          console.log("user credential", userCredential);
-          const user = userCredential._tokenResponse.email;
-          const myUserUid = auth.currentUser.uid;
+      if (confirmPassword === password) {
+        createUserWithEmailAndPassword(auth, email, password).then(
+          (userCredential) => {
+            console.log("user credential", userCredential);
+            const user = userCredential._tokenResponse.email;
+            const myUserUid = auth.currentUser.uid;
 
-          setDoc(doc(db, "users", `${myUserUid}`), {
-            email: user,
-            phone: phone,
-          });
-        }
-      );
+            // dispatch(setAuth(auth.currentUser))
+
+            setDoc(doc(db, "users", `${myUserUid}`), {
+              fullname: fullname,
+              username: username,
+              email: user,
+              phone: phone,
+              gender: gender,
+              street : "",
+              city: "",
+              province: ""
+            });
+          }
+        );
+      } else {
+        Alert.alert(
+          "Password do not match",
+          "Please match your password",
+          [
+            {
+              text: "Cancel",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel",
+            },
+            { text: "OK", onPress: () => console.log("OK Pressed") },
+          ],
+          { cancelable: false }
+        );
+      }
     }
   };
   return (
@@ -74,15 +130,68 @@ const RegisterScreen = () => {
           Create your{"\n"}account
         </Text>
         <View style={styles.formContainer}>
-          <TextInput style={styles.textInput} placeholder="Full Name" />
-          <TextInput style={styles.textInput} placeholder="Username" />
-          <TextInput style={styles.textInput} placeholder="Email" />
-          <TextInput style={styles.textInput} placeholder="Password" />
-          <TextInput style={styles.textInput} placeholder="Confirm Password" />
-          <TextInput style={styles.textInput} placeholder="Phone Number" />
-          <TextInput style={styles.textInput} placeholder="Gender" />
+          <TextInput
+            style={styles.textInput}
+            placeholder="Full Name"
+            value={fullname}
+            onChangeText={(text) => setFullname(text)}
+          />
+          <TextInput
+            style={styles.textInput}
+            placeholder="Username"
+            value={username}
+            onChangeText={(text) => setUsername(text)}
+          />
+          <TextInput
+            style={styles.textInput}
+            placeholder="Email"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+          />
+          <PasswordInput
+            placeholder={"Password"}
+            password={password}
+            setPassword={setPassword}
+          />
+          <PasswordInput
+            placeholder={"Confirm password"}
+            password={confirmPassword}
+            setPassword={setConfirmPassword}
+          />
+
+          <TextInput
+            style={styles.textInput}
+            placeholder="Phone Number"
+            value={phone}
+            onChangeText={(text) => setPhone(text)}
+          />
+          <DropDownPicker
+            open={open}
+            value={gender}
+            items={items}
+            setOpen={setOpen}
+            setValue={setGender}
+            setItems={setItems}
+            placeholder="Gender"
+            placeholderStyle={{
+              color: "#C4C4C4",
+            }}
+            style={{
+              backgroundColor: "#EDEDED",
+              borderWidth: 0,
+              paddingVertical: 12,
+              paddingHorizontal: 15,
+              borderRadius: 10,
+            }}
+            dropDownContainerStyle={{
+              backgroundColor: "#dfdfdf",
+              borderWidth: 0,
+              paddingHorizontal: 8,
+            }}
+          />
+          
         </View>
-        <Pressable
+        <TouchableOpacity
           onPress={register}
           style={{
             width: 300,
@@ -103,7 +212,7 @@ const RegisterScreen = () => {
           >
             Register
           </Text>
-        </Pressable>
+        </TouchableOpacity>
         <View style={{ flexDirection: "row", justifyContent: "center" }}>
           <Text style={{ textAlign: "center", fontSize: 16 }}>
             Already have an account?
@@ -245,5 +354,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 2,
     borderColor: "#EDEDED",
+  },
+  addressInput: {
+    backgroundColor: "#EDEDED",
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#EDEDED",
+    height: 100,
   },
 });

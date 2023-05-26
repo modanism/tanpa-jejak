@@ -10,6 +10,7 @@ import ProfileScreen from "./screens/ProfileScreen";
 import OrderScreen from "./screens/OrderScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TabNavigator from "./navigation/TabNavigator";
+import AddressScreen from "./screens/AddressScreen";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -23,11 +24,6 @@ const StackNavigator = () => {
       <Stack.Screen
         name="Login"
         component={LoginScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Home"
-        component={HomeScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -46,8 +42,8 @@ const StackNavigator = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="Profile"
-        component={ProfileScreen}
+        name="Address"
+        component={AddressScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

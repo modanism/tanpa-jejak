@@ -12,7 +12,7 @@ import { decrementQty, incrementQty } from "../ProductReducer";
 const FoodCardDetail = ({ foodModalData, onCloseModal, isVisible }) => {
   const [item, setItem] = useState(foodModalData);
   const product = useSelector((state) => state.product.product);
-  console.log("test",product.find((item) => item.id === `${foodModalData.id}`))
+  // console.log("test",product.find((item) => item.id === `${foodModalData.id}`))
 
 
 
@@ -96,6 +96,8 @@ const FoodCardDetail = ({ foodModalData, onCloseModal, isVisible }) => {
 
               <Pressable
                 onPress={() => {
+                  console.log(foodModalData);
+
                   dispatch(incrementQuantity(foodModalData)); // cart
                   dispatch(incrementQty(foodModalData)); //product
                 }}
@@ -212,7 +214,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   image: {
-    width: 300,
+    minWidth: 300,
     height: 200,
     borderRadius: 10,
     resizeMode: "contain",
@@ -229,6 +231,6 @@ const styles = StyleSheet.create({
   foodPrice: {
     fontSize: 17,
     color: colors.greenOld,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });

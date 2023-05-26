@@ -22,31 +22,42 @@ import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import colors from "../utils/colors";
 import { Ionicons, Fontisto } from "@expo/vector-icons";
+import uuid from 'react-native-uuid';
+
+
 
 const OrderScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const cart = useSelector((state) => state.cart.cart);
+  const product = useSelector((state) => state.product.product);
+
   const total = cart
     .map((item) => item.quantity * item.price)
     .reduce((curr, prev) => curr + prev, 0);
 
-  console.log(total);
-
   const userUid = auth.currentUser.uid;
+  const orderId = uuid.v4();
+
 
   const placeOrder = async () => {
     navigation.navigate("TabNavigator");
+    product.map((item) => {
+      dispatch(emptyQty(item))
+    })
     dispatch(cleanCart());
     await setDoc(
       doc(db, "users", `${userUid}`),
       {
-        orders: { ...cart },
+        orders: {
+          [orderId]: { ...cart,done:false },
+        },
       },
       {
         merge: true,
       }
     );
+
   };
 
   const formatter = new Intl.NumberFormat(undefined, {
@@ -220,7 +231,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 10,
-    resizeMode: "contain",
+    resizeMode: "stretch",
   },
   innerContainer: {
     flexDirection: "column",
