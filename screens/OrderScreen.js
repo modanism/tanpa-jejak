@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   ScrollView,
   Image,
+  TouchableOpacity,
 } from "react-native";
 import React from "react";
 import AndroidStyles from "../styles/AndroidStyles";
@@ -46,18 +47,18 @@ const OrderScreen = () => {
       dispatch(emptyQty(item))
     })
     dispatch(cleanCart());
+    console.log(orderId);
+
     await setDoc(
-      doc(db, "users", `${userUid}`),
+      doc(db, "orders", `${userUid}`),
       {
-        orders: {
-          [orderId]: { ...cart,done:false },
-        },
+          [orderId]: cart,
       },
       {
-        merge: true,
+        merge: true
       }
     );
-
+      console.log("sent");
   };
 
   const formatter = new Intl.NumberFormat(undefined, {
@@ -68,9 +69,9 @@ const OrderScreen = () => {
   return (
     <SafeAreaView style={AndroidStyles.AndroidSafeArea}>
       <ScrollView>
-        <Pressable onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="chevron-back" size={48} color={colors.greenOld} />
-        </Pressable>
+        </TouchableOpacity>
         <View
           style={{
             padding: 10,

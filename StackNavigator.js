@@ -11,6 +11,7 @@ import OrderScreen from "./screens/OrderScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TabNavigator from "./navigation/TabNavigator";
 import AddressScreen from "./screens/AddressScreen";
+import OrderInfoScreen from "./screens/OrderInfoScreen";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -49,6 +50,11 @@ const StackNavigator = () => {
       <Stack.Screen
         name="Order"
         component={OrderScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="OrderInfo"
+        component={OrderInfoScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

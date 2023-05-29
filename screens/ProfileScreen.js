@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import AndroidStyles from "../styles/AndroidStyles";
 import { auth, db } from "../firebase";
 import { signOut } from "firebase/auth";
@@ -19,14 +19,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { setAuth } from "../AuthReducer";
 import colors from "../utils/colors";
 import { Entypo } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
+
 
 const ProfileScreen = () => {
   // const [userData, setUserData] = useState(null)
   // console.log(userData)
   const navigation = useNavigation();
 
-  const userData = useSelector((state) => state.auth.auth);
-  const user = userData[0];
+  const [userCred, setUserCred] = useState(null);
+
+  // const userData = useSelector((state) => state.auth.auth);
+  // const user = userData[0];
   const dispatch = useDispatch();
 
   const signOutUser = () => {
@@ -39,33 +43,56 @@ const ProfileScreen = () => {
       });
   };
 
-  const fetchProducts = async () => {
-    const colRef = doc(db, "users", auth.currentUser.uid);
-    const docSnap = await getDoc(colRef);
-    if (docSnap.exists()) {
-      dispatch(setAuth(docSnap.data()));
-      console.log(docSnap.data())
-    } else {
-      // docSnap.data() will be undefined in this case
-      console.log("No such document!");
-    }
-  };
+  // const fetchProducts = async () => {
+  //   const colRef = doc(db, "users", auth.currentUser.uid);
+  //   const docSnap = await getDoc(colRef);
+  //   if (docSnap.exists()) {
+  //     dispatch(setAuth(docSnap.data()));
+  //     console.log(docSnap.data())
+  //     setUserCred(docSnap.data())
+  //   } else {
+  //     // docSnap.data() will be undefined in this case
+  //     console.log("No such document!");
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchProducts();
+  // useEffect(() => {
+  //   fetchProducts();
 
-  }, []);
+  // }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchOrders = async () => {
+        try {
+          const userUid = auth.currentUser.uid;
+          const docRef = doc(db, "users", userUid);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            setUserCred(docSnap.data());
+          } else {
+            console.log("No such document!");
+          }
+        } catch (error) {
+          console.log("Error fetching orders:", error);
+        }
+      };
+
+      fetchOrders();
+    }, [])
+  );
 
   return (
     <SafeAreaView style={[AndroidStyles.AndroidSafeArea]}>
       <ScrollView style={styles.container}>
-        <Text style={styles.screenTitle}>Welcome, {user?.username}</Text>
+        <Text style={styles.screenTitle}>Welcome, {userCred?.username}</Text>
         <View style={styles.userContainer}>
           <View style={styles.profileContainer}>
             <FontAwesome name="user" size={50} color="white" />
           </View>
           <View>
-            <Text style={styles.textName}>{user?.fullname}</Text>
+            <Text style={styles.textName}>{userCred?.fullname}</Text>
             <Text style={{ color: colors.gray, fontWeight: "bold" }}>
               CUSTOMER ID
             </Text>
@@ -91,11 +118,11 @@ const ProfileScreen = () => {
             </Text>
           </View>
           <View style={styles.addressContainer}>
-            {user?.city && user?.street && user?.province ? (
+            {userCred?.city && userCred?.street && userCred?.province ? (
               <View>
-                <Text style={styles.streetText}>{user?.street}</Text>
+                <Text style={styles.streetText}>{userCred?.street}</Text>
                 <Text style={styles.cityText}>
-                  {user?.city}, {user?.province}
+                  {userCred?.city}, {userCred?.province}
                 </Text>
               </View>
             ) : (

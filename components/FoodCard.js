@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
 
-const FoodCard = ({item, index, onPress}) => {
+const FoodCard = ({item, index, onPress, width}) => {
   const formatter = new Intl.NumberFormat(undefined, {
     style: "currency",
     currency: "IDR",
@@ -12,6 +12,7 @@ const FoodCard = ({item, index, onPress}) => {
       style={{ margin: 10, backgroundColor: "white", borderRadius: 15, width:150 }}
       key={index}
       onPress={onPress}
+      width={"50%"}
     >
       <Image
         source={{ uri: item.image }}

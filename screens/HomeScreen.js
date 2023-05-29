@@ -11,6 +11,7 @@ import {
   StatusBar,
   Button,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import React, { useCallback, useMemo, useRef } from "react";
 import AndroidStyles from "../styles/AndroidStyles";
@@ -46,75 +47,10 @@ const HomeScreen = () => {
 
   const navigation = useNavigation();
 
-  const [displayCurrentAddress, setdisplayCurrentAddress] = useState(
-    "Loading your location"
-  );
-  const [locationServicesEnabled, setlocationServicesEnabled] = useState(false);
-
-  useEffect(() => {
-    if (auth.currentUser) {
-      checkIfLocationEnabled();
-      getCurrentLocation();
-    } else {
-      navigation.navigate("Login");
-    }
-  }, []);
-
-  const checkIfLocationEnabled = async () => {
-    let enabled = await Location.hasServicesEnabledAsync();
-    if (!enabled) {
-      Alert.alert(
-        "Location not enabled",
-        "Please enable your location services",
-        [
-          {
-            text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
-            style: "cancel",
-          },
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]
-      );
-    } else {
-      setlocationServicesEnabled(enabled);
-    }
-  };
-
-  const getCurrentLocation = async () => {
-    let { status } = await Location.requestBackgroundPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert(
-        "Permission denied",
-        "Allow the app to use the locationn services",
-        [
-          {
-            text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
-            style: "cancel",
-          },
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]
-      );
-    }
-
-    const { coords } = await Location.getCurrentPositionAsync();
-    // console.log(coords);
-
-    if (coords) {
-      const { latitude, longitude } = coords;
-
-      let response = await Location.reverseGeocodeAsync({
-        latitude,
-        longitude,
-      });
-      // console.log(response);
-
-      for (let item of response) {
-        let address = `${item.city}, ${item.district}, ${item.region}`;
-        setdisplayCurrentAddress(address);
-      }
-    }
-  };
+  const formatter = new Intl.NumberFormat(undefined, {
+    style: "currency",
+    currency: "IDR",
+  });
 
   const product = useSelector((state) => state.product.product);
   const dispatch = useDispatch();
@@ -132,62 +68,6 @@ const HomeScreen = () => {
     fetchProducts();
   }, []);
 
-  // console.log(product);
-  // const services = [
-  //   {
-  //     id: "0",
-  //     image: "https://cdn-icons-png.flaticon.com/128/4643/4643574.png",
-  //     name: "shirt",
-  //     quantity: 0,
-  //     price: 10,
-  //   },
-  //   {
-  //     id: "11",
-  //     image: "https://cdn-icons-png.flaticon.com/128/892/892458.png",
-  //     name: "T-shirt",
-  //     quantity: 0,
-  //     price: 10,
-  //   },
-  //   {
-  //     id: "12",
-  //     image: "https://cdn-icons-png.flaticon.com/128/9609/9609161.png",
-  //     name: "dresses",
-  //     quantity: 0,
-  //     price: 10,
-  //   },
-  //   {
-  //     id: "13",
-  //     image: "https://cdn-icons-png.flaticon.com/128/599/599388.png",
-  //     name: "jeans",
-  //     quantity: 0,
-  //     price: 10,
-  //   },
-  //   {
-  //     id: "14",
-  //     image: "https://cdn-icons-png.flaticon.com/128/9431/9431166.png",
-  //     name: "Sweater",
-  //     quantity: 0,
-  //     price: 10,
-  //   },
-  //   {
-  //     id: "15",
-  //     image: "https://cdn-icons-png.flaticon.com/128/3345/3345397.png",
-  //     name: "shorts",
-  //     quantity: 0,
-  //     price: 10,
-  //   },
-  //   {
-  //     id: "16",
-  //     image: "https://cdn-icons-png.flaticon.com/128/293/293241.png",
-  //     name: "Sleeveless",
-  //     quantity: 0,
-  //     price: 10,
-  //   },
-  // ];
-
-  // paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
-  //{ flex: 1, backgroundColor: "#F0F0F0" }
-
   // ref
   const bottomSheetModalRef = useRef(null);
 
@@ -199,17 +79,6 @@ const HomeScreen = () => {
     setIsModalVisible(true);
     bottomSheetModalRef.current?.present();
   });
-  // const openModal = useCallback((item) => {
-  //   const itemWithUpdatedQuantity = {
-  //     ...item,
-  //     quantity: cart.find((c) => c.id === item.id)?.quantity || 0
-  //   };
-
-  //   setFoodModalData(itemWithUpdatedQuantity);
-  //   bottomSheetModalRef.current?.present();
-  // }, [cart]);
-
-  // callbacks
 
   const handleSheetChanges = useCallback((index) => {
     console.log("handleSheetChanges", index);
@@ -307,6 +176,33 @@ const HomeScreen = () => {
                 />
               ))}
             </ScrollView>
+            <Text
+              style={{
+                fontSize: 17,
+                fontWeight: "500",
+                color: "#005555",
+                fontWeight: "bold",
+                marginTop: 20,
+              }}
+            >
+              All Categories
+            </Text>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                flexWrap: "wrap",
+                alignItems: "flex-start", // if you want to fill rows left to right
+              }}
+            >
+              {product.map((item) => (
+                <FoodCard
+                  item={item}
+                  key={item.id}
+                  onPress={() => openModal(item)}
+                />
+              ))}
+            </View>
           </View>
         </ScrollView>
 
